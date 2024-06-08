@@ -14,7 +14,9 @@ def get_dbSession():
         yield db
     finally:
         db.close()
+
 Base = declarative_base()
+
 
 def get_tables(session):
     result = session.execute(text("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';"))

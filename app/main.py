@@ -1,10 +1,6 @@
 from pathlib import Path
 import sys
 import os
-
-PACKAGE_ROOT = Path(os.path.abspath(os.path.dirname(__file__))).parent
-sys.path.append(str(PACKAGE_ROOT))
-
 from typing import List, Optional
 from fastapi import FastAPI, Depends, HTTPException, Query
 from fastapi.responses import HTMLResponse
@@ -21,18 +17,26 @@ from app.data.insert_data import DataIngest
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from pydantic import BaseModel
 
+
+PACKAGE_ROOT = Path(os.path.abspath(os.path.dirname(__file__))).parent
+sys.path.append(str(PACKAGE_ROOT))
+
+
 class HealthCheckResponse(BaseModel):
     status: str
     version: str
+
 
 # Initialize the FastAPI app
 app = FastAPI()
 analyzer = SentimentIntensityAnalyzer()
 
+
 def check_tables_exist(engine):
     inspector = inspect(engine)
     tables = inspector.get_table_names()
     return 'comments' in tables and 'subfeddits' in tables
+
 
 def insert_initial_data(db):
     # Check if any data exists in the subfeddits table
@@ -68,6 +72,7 @@ def root():
     """
     return HTMLResponse(content=html_content)
 
+
 @app.get("/db-conn")
 async def healthcheck(db: Session = Depends(get_dbSession)):
     try:
@@ -76,6 +81,7 @@ async def healthcheck(db: Session = Depends(get_dbSession)):
         return {"status": "ok", "message": "Database connection successful"}
     except Exception as e:
         raise HTTPException(status_code=500, detail="Database connection failed")
+
 
 @app.get("/api/v1/version", response_model=HealthCheckResponse)
 def healthcheck():
@@ -88,6 +94,7 @@ def read_subfeddits(db: Session = Depends(get_dbSession)):
     if not subfeddits:
         raise HTTPException(status_code=404, detail="No subfeddits found")
     return [title[0] for title in subfeddits]
+
 
 @app.get("/subfeddit/{subfeddit_name}/comments", response_model=List[CommentResponse])
 def read_comments(

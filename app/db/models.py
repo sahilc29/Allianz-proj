@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
 from app.db import Base
 from sqlalchemy.orm import relationship
 
+
 class Comment(Base):
     __tablename__ = "comments"
 
@@ -12,6 +13,7 @@ class Comment(Base):
     subfeddit_id = Column(Integer, ForeignKey('subfeddits.id'))
 
     subfeddit = relationship("Subfeddit", back_populates="comments")
+
 
 class Subfeddit(Base):
     __tablename__ = "subfeddits"

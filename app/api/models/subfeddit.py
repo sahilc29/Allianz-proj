@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class SubfedditModel(BaseModel):
     id: int
     username: str

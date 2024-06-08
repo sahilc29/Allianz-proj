@@ -1,8 +1,7 @@
-from app.db import get_dbSession, engine
-# import csv
+from app.db import engine
 import pandas as pd
-import os
 from pathlib import Path
+
 
 class DataIngest:
     comments_file = Path(__file__).parent / "comments.csv"
