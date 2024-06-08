@@ -101,7 +101,7 @@ def read_subfeddits(db: Session = Depends(get_dbSession)):
 def read_comments(
     subfeddit_name: str,
     limit: int = Query(default=25),
-    db = Depends(get_dbSession),
+    db=Depends(get_dbSession),
     start_time: Optional[datetime] = Query(None),
     end_time: Optional[datetime] = Query(None),
     sort_by_polarity: bool = Query(False)
