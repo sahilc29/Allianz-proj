@@ -21,7 +21,7 @@ The API is a microservice designed to manage comments on different subfeddits (a
 + Endpoint: /subfeddit/{subfeddit_name}/comments
 + Function: Returns the most recent comments for a specific subfeddit.
 + Parameters:
-    + subfeddit_name (required): The name of the subfeddit.
+    + subfeddit_name (required): The name of the subfeddit. (Currently 3 categories are present in DB, Technology, Books, Movies)
     + limit (optional, default: 25): The maximum number of comments to return.
     + start_time and end_time (optional): Filters comments by a specific time range. (The time range available to filter results is from 01-05-2024 00:00:00 to 31-05-2024 23:59:59)
     + sort_by_polarity (optional, default: False): Sorts comments by polarity score if true.
