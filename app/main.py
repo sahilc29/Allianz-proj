@@ -41,7 +41,7 @@ def check_tables_exist(engine):
 def insert_initial_data(db):
     # Check if any data exists in the subfeddits table
     subfeddit_count = db.query(Subfeddit).count()
-    
+
     # Insert initial data if no rows exist
     if subfeddit_count == 0:
         DataIngest().subfeddits()
@@ -56,6 +56,7 @@ def analyze_sentiment(text: str):
     score = analyzer.polarity_scores(text)['compound']
     classification = "positive" if score >= 0 else "negative"
     return score, classification
+
 
 @app.get("/", include_in_schema=False, response_class=HTMLResponse)
 def root():
@@ -74,13 +75,13 @@ def root():
 
 
 @app.get("/db-conn")
-async def healthcheck(db: Session = Depends(get_dbSession)):
+def dbhealthcheck(db: Session = Depends(get_dbSession)):
     try:
         # Try a simple database operation
         db.execute(text("SELECT 1"))
         return {"status": "ok", "message": "Database connection successful"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Database connection failed")
+        raise HTTPException(status_code=500, detail="Database connection failed: {}".format(e))
 
 
 @app.get("/api/v1/version", response_model=HealthCheckResponse)
@@ -98,7 +99,6 @@ def read_subfeddits(db: Session = Depends(get_dbSession)):
 
 @app.get("/subfeddit/{subfeddit_name}/comments", response_model=List[CommentResponse])
 def read_comments(
-    # subfeddit_name: Optional[List] = Query['Technology', 'Books', 'Movies'],
     subfeddit_name: str,
     limit: int = Query(default=25),
     db = Depends(get_dbSession),
@@ -110,7 +110,7 @@ def read_comments(
     if subfeddit_id is None:
         raise HTTPException(status_code=404, detail='Subfeddit not found')
     query = db.query(Comment).filter(Comment.subfeddit_id == subfeddit_id.id)
-    
+
     if start_time:
         query = query.filter(Comment.created_at >= start_time)
     if end_time:
@@ -127,10 +127,10 @@ def read_comments(
             comments = query.all()
             comments = sorted(comments, key=lambda x: analyze_sentiment(x.text)[0], reverse=True)
         else:
-            comments = query.all() 
+            comments = query.all()
     else:
         comments = get_recent_comments(db, subfeddit_id.id, limit)
-    
+
     response = []
     for comment in comments[:limit]:
         score, classification = analyze_sentiment(comment.text)
@@ -156,6 +156,7 @@ def main():
         db.close()
 
     uvicorn.run(app, host='0.0.0.0', port=8080)
+
 
 if __name__ == '__main__':
     main()
