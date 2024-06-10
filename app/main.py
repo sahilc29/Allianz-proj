@@ -1,6 +1,8 @@
 from pathlib import Path
 import sys
 import os
+PACKAGE_ROOT = Path(os.path.abspath(os.path.dirname(__file__))).parent
+sys.path.append(str(PACKAGE_ROOT))
 from typing import List, Optional
 from fastapi import FastAPI, Depends, HTTPException, Query
 from fastapi.responses import HTMLResponse
@@ -16,10 +18,6 @@ from app.db.repository import get_subfeddits, get_recent_comments
 from app.data.insert_data import DataIngest
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from pydantic import BaseModel
-
-
-PACKAGE_ROOT = Path(os.path.abspath(os.path.dirname(__file__))).parent
-sys.path.append(str(PACKAGE_ROOT))
 
 
 class HealthCheckResponse(BaseModel):
